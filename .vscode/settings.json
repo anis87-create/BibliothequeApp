@@ -1,0 +1,8 @@
+{
+    "folder-color.pathColors": [],
+    "postman.settings.dotenv-detection-notification-visibility": false,
+    "workbench.colorCustomizations": {
+    "editorCursor.foreground": "#FFA500",
+    "terminalCursor.foreground": "#FFA500"
+  }
+}

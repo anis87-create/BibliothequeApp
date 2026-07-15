@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(rm \"c:\\\\Users\\\\Admin\\\\Desktop\\\\dev\\\\biblio-lab\\\\backend\\\\services\\\\auth.js\")",
+      "Bash(rmdir \"c:\\\\Users\\\\Admin\\\\Desktop\\\\dev\\\\biblio-lab\\\\backend\\\\services\")",
+      "Bash(node --check controllers/auth.controller.js)",
+      "Bash(node --check repositories/auth.js)",
+      "Bash(node _check-users-table.js)",
+      "Bash(npm run *)"
+    ]
+  }
+}
