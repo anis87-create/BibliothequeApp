@@ -11,7 +11,7 @@ class UserService {
         const user =  await this.userRepository.register(form);
         return user;
     }
-    async findById(id: string){
+    async findById(id: number){
         const user = await this.userRepository.findById(id);
         if(!user){
             throw new Error('user not found')
@@ -19,7 +19,7 @@ class UserService {
         return user;
     }
     async findByEmail(email: string){
-        const user = await this.userRepository.findById(email);
+        const user = await this.userRepository.findByEmail(email);
         if(!user){
             throw new Error('user not found')
         }

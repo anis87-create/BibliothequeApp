@@ -1,12 +1,4 @@
 import type { Request, Response, NextFunction } from 'express';
-import type User = require('../models/User');
-declare global {
-    namespace Express {
-        interface Request {
-            user: User.User;
-        }
-    }
-}
 
 const authorize = (...roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {

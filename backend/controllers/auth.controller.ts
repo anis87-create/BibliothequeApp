@@ -9,7 +9,6 @@ import type { Request, Response, NextFunction } from 'express';
 
 
 const { pool } = require('../config/db');
-const authRepository = require('../repositories/auth');
 const bcrypt = require('bcrypt');
 const { asyncHandler } = require('../middlewares/asyncHandler');
 const { generateToken } = require('../helpers');
@@ -64,6 +63,7 @@ module.exports.register = asyncHandler(async (req: Request<{}, {}, User>, res: R
             id: user.id,
             email: user.email,
             fullName: user.fullname,
+            password: user.password
         },
         token,
     });
@@ -72,7 +72,7 @@ module.exports.register = asyncHandler(async (req: Request<{}, {}, User>, res: R
 module.exports.login = asyncHandler(async (req: Request<{}, {}, User>, res: Response, next: NextFunction) => {
     const email = req.body.email?.trim().toLowerCase();
     const { password } = req.body;
-      
+
     interface Error {
         id: string,
         email: string,
@@ -88,19 +88,24 @@ module.exports.login = asyncHandler(async (req: Request<{}, {}, User>, res: Resp
     if (!password) {
         errors.password = 'the password is required!';
     }
+    
 
     if (Object.keys(errors).length > 0) {
         return res.status(400).json({ errors });
     }
 
-    const user = await authRepository.getUserByEmail(email);
-
+    
+    const user = await userService.findByEmail(email);
+    
+    
+    
     // Toujours comparer, même si l'utilisateur n'existe pas, pour égaliser
     // le temps de réponse et ne pas permettre l'énumération de comptes.
     const isMatched = await bcrypt.compare(
         password,
-        user ? user.password : authRepository.DUMMY_HASH
+        user.password
     );
+
 
     if (!user || !isMatched) {
         return res.status(401).json({ msg: 'invalid credentials' });
@@ -117,8 +122,8 @@ module.exports.login = asyncHandler(async (req: Request<{}, {}, User>, res: Resp
     });
 });
 
-module.exports.authMe = asyncHandler(async (req: Request<{}, {}, {user: User}>, res: Response, next: NextFunction) => {
-    const user = await authRepository.getUserById(req.user.id);
+module.exports.authMe = asyncHandler(async (req: Request<{}, {}, User>, res: Response, next: NextFunction) => {
+    const user = await userService.findById(req.user.id);
     if(!user){
         return res.status(404).json({msg:'user not found'});
     }

@@ -14,18 +14,18 @@ class UserRepository implements IUserRepository {
        const INSERT_QUERY = `
             INSERT INTO users (email, fullname, password)
             VALUES ($1, $2, $3)
-            RETURNING id, email, fullname AS "fullName", created_at
+            RETURNING id, email, fullname AS "fullName",password, created_at
         `;
         const res = await query(INSERT_QUERY,[user.email, user.fullname, user.password]);
         return res.rows[0];
     }
-    async findById(id: string): Promise<User | null> {
+    async findById(id: number): Promise<User | null> {
         const GET_QUERY = `SELECT id, email, fullname, role, created_at FROM users WHERE id=$1`;
         const res = await query(GET_QUERY, [id]);
         return res.rows.length > 0 ? res.rows[0] : null;
     }
     async findByEmail(email: string): Promise<User | null> {
-         const GET_QUERY = `SELECT id, email, fullname, role, created_at FROM users WHERE email=$1`;
+         const GET_QUERY = `SELECT id, email, fullname,password, role, created_at FROM users WHERE email=$1`;
         const res = await query(GET_QUERY, [email]);
         return res.rows.length > 0 ? res.rows[0] : null;
     }

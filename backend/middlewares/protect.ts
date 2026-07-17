@@ -1,15 +1,6 @@
 
 const jwt = require('jsonwebtoken');
 import type { Request, Response, NextFunction } from 'express';
-import type User = require("../models/User");
-
-declare global {
-    namespace Express {
-        interface Request {
-            user: User.User
-        }
-    }
-}
 
 module.exports.protect = (req: Request, res: Response, next: NextFunction) => {
     const authorization = req.headers.authorization;

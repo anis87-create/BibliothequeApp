@@ -9,7 +9,7 @@
     // See also https://aka.ms/tsconfig/module
     "module": "commonjs",
     "target": "es2020",
-    "types": ["node"],
+    "types": ["node","express"],
 
     // Other Outputs
     "sourceMap": true,
@@ -40,6 +40,12 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
   },
-  "include": ["**/*.ts"],
-  "exclude": ["node_modules", "build"]
+   "include": [
+    "**/*.ts",
+    "**/*.d.ts"
+  ],
+  "exclude": ["node_modules", "build"],
+  "ts-node": {
+    "files": true
+  }
 }
