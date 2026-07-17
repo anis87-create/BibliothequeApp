@@ -1,4 +1,12 @@
-const globalErrorHanlder = (err, req, res, next) => {
+import type { Request, Response, NextFunction } from 'express';
+interface Error {
+  statusCode: number,
+  message: string,
+  code: string,
+  stack: string
+}
+
+const globalErrorHanlder = (err: Error, req: Request, res: Response, next: NextFunction) => {
    let statusCode = err.statusCode || 500;
    let message = err.message || 'Internal Server Error';
    if(err.code === '23505'){

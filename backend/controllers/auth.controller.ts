@@ -1,13 +1,38 @@
+
+import UserService = require('../services/UserService');
+import type { User } from "../models/User";
+import UserRepository = require("../repositories/UserRepostiory");
+import type e = require('express');
+import type { Request, Response, NextFunction } from 'express';
+
+
+
+
+const { pool } = require('../config/db');
 const authRepository = require('../repositories/auth');
 const bcrypt = require('bcrypt');
 const { asyncHandler } = require('../middlewares/asyncHandler');
 const { generateToken } = require('../helpers');
 
-module.exports.register = asyncHandler(async (req, res, next) => {
+
+const userService = new UserService(new UserRepository(pool));
+
+ interface Error {
+        id: string,
+        email: string,
+        fullname: string,
+        password: string
+}
+
+module.exports.register = asyncHandler(async (req: Request<{}, {}, User>, res: Response, next: NextFunction) => {
+
     const email = req.body.email?.trim().toLowerCase();
-    const fullName = req.body.fullName?.trim();
+    const fullName = req.body.fullname?.trim();
     const { password } = req.body;
-    const errors = {};
+  
+   
+
+      const errors = {} as Error;
 
     if (!email) {
         errors.email = 'the email is required!';
@@ -22,7 +47,7 @@ module.exports.register = asyncHandler(async (req, res, next) => {
     }
 
     if (!fullName) {
-        errors.fullName = 'the fullName is required!';
+        errors.fullname = 'the fullName is required!';
     }
 
     if (Object.keys(errors).length > 0) {
@@ -30,24 +55,31 @@ module.exports.register = asyncHandler(async (req, res, next) => {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await authRepository.register(email, fullName, hashedPassword);
-    const token = generateToken(user.id, );
+    const user = await userService.register({ email, fullname: fullName, password: hashedPassword } as User);
+    const token = generateToken(user.id);
 
     return res.status(201).json({
         msg: 'Registered successfully!',
         user: {
             id: user.id,
             email: user.email,
-            fullName: user.fullName,
+            fullName: user.fullname,
         },
         token,
     });
 });
 
-module.exports.login = asyncHandler(async (req, res, next) => {
+module.exports.login = asyncHandler(async (req: Request<{}, {}, User>, res: Response, next: NextFunction) => {
     const email = req.body.email?.trim().toLowerCase();
     const { password } = req.body;
-    const errors = {};
+      
+    interface Error {
+        id: string,
+        email: string,
+        fullname: string,
+        password: string
+    }
+    const errors = {} as Error;
 
     if (!email) {
         errors.email = 'the email is required!';
@@ -85,7 +117,7 @@ module.exports.login = asyncHandler(async (req, res, next) => {
     });
 });
 
-module.exports.authMe = asyncHandler(async (req, res, next) => {
+module.exports.authMe = asyncHandler(async (req: Request<{}, {}, {user: User}>, res: Response, next: NextFunction) => {
     const user = await authRepository.getUserById(req.user.id);
     if(!user){
         return res.status(404).json({msg:'user not found'});

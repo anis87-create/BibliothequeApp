@@ -21,10 +21,11 @@ pool.on('connect', () => {
     console.log('Connected to the PostgreSQL database successfully!')
 });
 
-pool.on('error', (error) => {
+pool.on('error', (error: string) => {
    console.error('PostgreSQL pool error:', error);
 })
 
 module.exports = {
-    query: (text, values) => pool.query(text, values)
+    query: (text: string, values: [string]) => pool.query(text, values),
+    pool,
 }
